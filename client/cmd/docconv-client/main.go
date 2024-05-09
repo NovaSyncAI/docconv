@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"code.sajari.com/docconv/v2/client"
+	"github.com/NovaSyncAi/docconv/client"
 )
 
 var (

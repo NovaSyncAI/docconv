@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-option go_package = "code.sajari.com/docconv/v2/tsp";
+option go_package = "github.com/NovaSyncAi/docconv/tsp";
 
 package TSP;
 
