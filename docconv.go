@@ -18,6 +18,8 @@ type Response struct {
 	Error string            `json:"error"`
 }
 
+var ToolPath string
+
 // MimeTypeByExtension returns a mimetype for the given extension, or
 // application/octet-stream if none can be determined.
 func MimeTypeByExtension(filename string) string {
@@ -63,7 +65,7 @@ func Convert(r io.Reader, mimeType string, readability bool) (*Response, error) 
 	var err error
 	switch mimeType {
 	case "application/msword", "application/vnd.ms-word":
-		body, meta, err = ConvertDoc(r)
+		body, meta, err = ConvertDoc(r, ToolPath)
 
 	case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
 		body, meta, err = ConvertDocx(r)
@@ -75,13 +77,13 @@ func Convert(r io.Reader, mimeType string, readability bool) (*Response, error) 
 		body, meta, err = ConvertODT(r)
 
 	case "application/vnd.apple.pages", "application/x-iwork-pages-sffpages":
-		body, meta, err = ConvertPages(r)
+		body, meta, err = ConvertPages(r, ToolPath)
 
 	case "application/pdf":
-		body, meta, err = ConvertPDF(r)
+		body, meta, err = ConvertPDF(r, ToolPath)
 
 	case "application/rtf", "application/x-rtf", "text/rtf", "text/richtext":
-		body, meta, err = ConvertRTF(r)
+		body, meta, err = ConvertRTF(r, ToolPath)
 
 	case "text/html":
 		body, meta, err = ConvertHTML(r, readability)
@@ -123,6 +125,11 @@ func ConvertPath(path string) (*Response, error) {
 	defer f.Close()
 
 	return Convert(f, mimeType, true)
+}
+
+func SetToolPath(path string) error {
+	ToolPath = path
+	return nil
 }
 
 // ConvertPathReadability converts a local path to text, with the given readability

@@ -20,12 +20,12 @@ type BodyResult struct {
 
 // Convert PDF
 
-func ConvertPDFText(path string) (BodyResult, MetaResult, error) {
+func ConvertPDFText(path string, toolPath string) (BodyResult, MetaResult, error) {
 	metaResult := MetaResult{meta: make(map[string]string)}
 	bodyResult := BodyResult{}
 	mr := make(chan MetaResult, 1)
 	go func() {
-		metaStr, err := exec.Command("pdfinfo", path).Output()
+		metaStr, err := exec.Command(toolPath+"pdfinfo", path).Output()
 		if err != nil {
 			metaResult.err = err
 			mr <- metaResult
@@ -56,7 +56,7 @@ func ConvertPDFText(path string) (BodyResult, MetaResult, error) {
 
 	br := make(chan BodyResult, 1)
 	go func() {
-		body, err := exec.Command("pdftotext", "-q", "-nopgbrk", "-enc", "UTF-8", "-eol", "unix", path, "-").Output()
+		body, err := exec.Command(toolPath+"pdftotext", "-q", "-nopgbrk", "-enc", "UTF-8", "-eol", "unix", path, "-").Output()
 		if err != nil {
 			bodyResult.err = err
 		}

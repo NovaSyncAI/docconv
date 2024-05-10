@@ -70,6 +70,7 @@ type Client struct {
 	endpoint   string
 	protocol   string
 	httpClient *http.Client
+	toolPath   string
 }
 
 // Response is from docconv.Response copied here to avoid dependency on
@@ -135,4 +136,10 @@ func ConvertPath(c *Client, path string) (*Response, error) {
 	defer f.Close()
 
 	return c.Convert(f, f.Name())
+}
+
+// set tool path
+func SetToolPath(c *Client, path string) error {
+	c.toolPath = path
+	return nil
 }

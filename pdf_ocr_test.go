@@ -11,7 +11,7 @@ func TestPDFHasImage_CannotExecuteCode(t *testing.T) {
 	// Try to inject code by passing a bad file path.
 	// If the code was successful it will create a file called foo in the working directory
 	badFilePath := "$(id >> foo).pdf"
-	got, err := PDFHasImage(badFilePath)
+	got, err := PDFHasImage(badFilePath, "")
 	if err != nil {
 		t.Fatal(err)
 	}

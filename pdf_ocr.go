@@ -103,7 +103,7 @@ func ConvertPDFImages(path string) (BodyResult, error) {
 }
 
 // PdfHasImage verify if `path` (PDF) has images
-func PDFHasImage(path string) (bool, error) {
+/*func PDFHasImage(path string) (bool, error) {
 	cmd := "pdffonts -l 5 %s | tail -n +3 | cut -d' ' -f1 | sort | uniq"
 	out, err := exec.Command("bash", "-c", fmt.Sprintf(cmd, shellEscape(path))).CombinedOutput()
 
@@ -114,16 +114,52 @@ func PDFHasImage(path string) (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}*/
+
+// PDFHasImage checks if the PDF at the given path contains images.
+// It returns true if no fonts are found within the first 5 pages, indicating the presence of images.
+func PDFHasImage(path string, toolPath string) (bool, error) {
+	// Execute the pdffonts command to list fonts in the first 5 pages of the PDF
+	cmd := exec.Command(toolPath+"pdffonts", "-l", "5", path)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+
+	err := cmd.Run()
+	if err != nil {
+		return false, fmt.Errorf("error running pdffonts: %w, output: %s", err, out.String())
+	}
+
+	// Split the output into lines
+	lines := strings.Split(out.String(), "\n")
+
+	// If there are fewer than 3 lines, the PDF contains no fonts
+	if len(lines) < 3 {
+		return true, nil
+	}
+
+	// Extract the actual font names, starting from the third line
+	fonts := make(map[string]struct{})
+	for _, line := range lines[2:] {
+		// Extract the first field (font name) by splitting the line
+		fields := strings.Fields(line)
+		if len(fields) > 0 {
+			fonts[fields[0]] = struct{}{}
+		}
+	}
+
+	// If there are no unique fonts found, assume there are images
+	return len(fonts) == 0, nil
 }
 
-func ConvertPDF(r io.Reader) (string, map[string]string, error) {
+func ConvertPDF(r io.Reader, toolPath string) (string, map[string]string, error) {
 	f, err := NewLocalFile(r)
 	if err != nil {
 		return "", nil, fmt.Errorf("error creating local file: %v", err)
 	}
 	defer f.Done()
 
-	bodyResult, metaResult, textConvertErr := ConvertPDFText(f.Name())
+	bodyResult, metaResult, textConvertErr := ConvertPDFText(f.Name(), toolPath)
 	if textConvertErr != nil {
 		return "", nil, textConvertErr
 	}
@@ -134,7 +170,7 @@ func ConvertPDF(r io.Reader) (string, map[string]string, error) {
 		return "", nil, metaResult.err
 	}
 
-	hasImage, err := PDFHasImage(f.Name())
+	hasImage, err := PDFHasImage(f.Name(), toolPath)
 	if err != nil {
 		return "", nil, fmt.Errorf("could not check if PDF has image: %w", err)
 	}
