@@ -14,7 +14,7 @@ func TestConvertRTF(t *testing.T) {
 	if err != nil {
 		t.Fatalf("got error %v, want nil", err)
 	}
-	res, _, err := docconv.ConvertRTF(bytes.NewReader(data))
+	res, _, err := docconv.ConvertRTF(bytes.NewReader(data), "")
 	if err != nil {
 		t.Fatalf("got error %v, want nil", err)
 	}

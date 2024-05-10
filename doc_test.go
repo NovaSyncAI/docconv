@@ -63,7 +63,7 @@ func TestConvertDoc(t *testing.T) {
 			}
 			defer f.Close()
 
-			gotText, gotMeta, err := ConvertDoc(f)
+			gotText, gotMeta, err := ConvertDoc(f, "")
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ConvertDoc() error = %v, wantErr %v", err, tt.wantErr)
 				return

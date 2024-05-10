@@ -13,7 +13,7 @@ import (
 )
 
 // ConvertDoc converts an MS Word .doc to text.
-func ConvertDoc(r io.Reader) (string, map[string]string, error) {
+func ConvertDoc(r io.Reader, toolPath string) (string, map[string]string, error) {
 	f, err := NewLocalFile(r)
 	if err != nil {
 		return "", nil, fmt.Errorf("error creating local file: %v", err)
@@ -81,7 +81,7 @@ func ConvertDoc(r io.Reader) (string, map[string]string, error) {
 		}
 		defer os.Remove(outputFile.Name())
 
-		err = exec.Command("wvText", f.Name(), outputFile.Name()).Run()
+		err = exec.Command(toolPath+"wvText", f.Name(), outputFile.Name()).Run()
 		if err != nil {
 			// TODO: Propagate error.
 		}

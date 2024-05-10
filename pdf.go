@@ -7,14 +7,14 @@ import (
 	"io"
 )
 
-func ConvertPDF(r io.Reader) (string, map[string]string, error) {
+func ConvertPDF(r io.Reader, toolPath string) (string, map[string]string, error) {
 	f, err := NewLocalFile(r)
 	if err != nil {
 		return "", nil, fmt.Errorf("error creating local file: %v", err)
 	}
 	defer f.Done()
 
-	bodyResult, metaResult, convertErr := ConvertPDFText(f.Name())
+	bodyResult, metaResult, convertErr := ConvertPDFText(f.Name(), toolPath)
 	if convertErr != nil {
 		return "", nil, convertErr
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 // ConvertRTF converts RTF files to text.
-func ConvertRTF(r io.Reader) (string, map[string]string, error) {
+func ConvertRTF(r io.Reader, toolPath string) (string, map[string]string, error) {
 	f, err := NewLocalFile(r)
 	if err != nil {
 		return "", nil, fmt.Errorf("error creating local file: %v", err)
@@ -17,7 +17,7 @@ func ConvertRTF(r io.Reader) (string, map[string]string, error) {
 	defer f.Done()
 
 	var output string
-	tmpOutput, err := exec.Command("unrtf", "--nopict", "--text", f.Name()).Output()
+	tmpOutput, err := exec.Command(toolPath+"unrtf", "--nopict", "--text", f.Name()).Output()
 	if err != nil {
 		return "", nil, fmt.Errorf("unrtf error: %v", err)
 	}
